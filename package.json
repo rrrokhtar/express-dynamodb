@@ -4,6 +4,7 @@
   "description": "",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
+  "repository": "https://github.com/rrrokhtar/express-dynamodb/",
   "keywords": [
     "dynamodb",
     "aws",
