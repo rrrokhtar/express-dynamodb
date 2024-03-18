@@ -4,6 +4,15 @@
   "description": "",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
+  "keywords": [
+    "dynamodb",
+    "aws",
+    "express",
+    "serverless",
+    "database",
+    "db",
+    "ddb"
+  ],
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
