@@ -41,9 +41,13 @@ const operatedResults = await findOperated('tableName', { attribute: value }, { 
 const resultsWithinRange = await findWithin('tableName', 'key', start, end);
 
 // Find all items in the table
-const allItems = [];
-for await (const items of findAll('tableName')) {
-  allItems.push(...items);
+const batchSize = 100;
+let res;
+let iterator = findAll('tableName', batchSize);
+while ((res = await iterator.next()) && !res.done) {
+  for (const val of res.value) {
+    console.log(val);
+  }
 }
 ```
 
@@ -133,7 +137,7 @@ Finds items within a range.
 
 Returns an array of items.
 
-### findAll(tableName: string, limit: number = 10): AsyncIterableIterator\<any[]\>
+### findAll(tableName: string, limit: number = 10): AsyncGenerator<Record<string, any>[], void, unknown>
 
 Findsall items in the table.
 
