@@ -17,7 +17,7 @@ export { setRegion };
 export const insertOrUpdate = async (tableName: string, pk: string, item: Record<string, unknown>, sk?: string) => {
     const itemKeys = Object.keys(item).filter((k) => k !== pk && k !== sk);
     if (itemKeys.length === Object.keys(item).length) {
-        throw new Error('No primary key is found');
+        throw new Error('No partition key is found');
     }
     const params: UpdateItemCommandInput = {
         TableName: tableName,
