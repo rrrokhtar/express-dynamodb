@@ -10,7 +10,7 @@ export { setRegion };
 /**
  * @description Insert or update an item into the table.
  * @param {string} tableName - The name of the table.
- * @param {string} pk - The primary key of the item.
+ * @param {string} pk - The partition key of the item.
  * @param {object} item - The item to insert or update.
  * @param {string} sk - The secondary key of the item.
  */
