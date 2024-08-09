@@ -6,35 +6,44 @@ import { QueryCommand, ScanCommandInput } from "@aws-sdk/lib-dynamodb";
 import { setRegion } from "./dynamodb-client";
 export { setRegion };
 
+
 /**
  * @description Insert or update an item into the table.
  * @param {string} tableName - The name of the table.
- * @param {string} pk - The partion key of the item.
+ * @param {string} pk - The primary key of the item.
  * @param {object} item - The item to insert or update.
- * @param {string} sk - The sort key of the item.
+ * @param {string} sk - The secondary key of the item.
  */
-export const insertOrUpdate = async (tableName: string, pk: string, item: any, sk?: string) => {
-    const itemKeys = Object.keys(item).filter(k => (k !== pk && k !== sk));
-    if (!itemKeys.length) {
-        throw new Error('No item keys found');
-    }
+export const insertOrUpdate = async (tableName: string, pk: string, item: Record<string, unknown>, sk?: string) => {
+    const itemKeys = Object.keys(item).filter((k) => k !== pk && k !== sk);
     if (itemKeys.length === Object.keys(item).length) {
-        throw new Error('No partion key is found');
+        throw new Error('No primary key is found');
     }
     const params: UpdateItemCommandInput = {
         TableName: tableName,
-        UpdateExpression: `SET ${itemKeys.map((k: any, index: number) => `#field${index} = :value${index}`).join(', ')}`,
-        ExpressionAttributeNames: itemKeys.reduce((accumulator, k, index) => ({ ...accumulator, [`#field${index}`]: k }), {}),
-        ExpressionAttributeValues: marshall(itemKeys.reduce((accumulator, k, index) => ({ ...accumulator, [`:value${index}`]: item[k] }), {}),
-            { removeUndefinedValues: true }),
-        Key: { [pk]: { S: (item as any)?.[pk]! } },
-        ReturnValues: 'ALL_NEW'
+        Key: { [pk]: { S: (item as never)?.[pk] } },
+        ReturnValues: 'ALL_NEW',
     };
+    if (itemKeys.length > 0) {
+        params.UpdateExpression = `SET ${itemKeys
+            .map((_k: unknown, index: number) => `#field${index} = :value${index}`)
+            .join(', ')}`;
+        params.ExpressionAttributeNames = itemKeys.reduce(
+            (accumulator, k, index) => ({ ...accumulator, [`#field${index}`]: k }),
+            {},
+        );
+        params.ExpressionAttributeValues = marshall(
+            itemKeys.reduce((accumulator, k, index) => ({ ...accumulator, [`:value${index}`]: item[k] }), {}),
+            { removeUndefinedValues: true },
+        );
+    }
     if (sk && params.Key) {
-        params.Key[sk] = { S: (item as any)?.[sk]! };
+        params.Key[sk] = { S: (item as never)?.[sk] };
     }
     return await ddbDocClient.send(new UpdateItemCommand(params));
-}
+};
+
+
 
 /**
  * @description Delete one item by partion key. Assuming existence of that item
