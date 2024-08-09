@@ -12,7 +12,7 @@ export { setRegion };
  * @param {string} tableName - The name of the table.
  * @param {string} pk - The partition key of the item.
  * @param {object} item - The item to insert or update.
- * @param {string} sk - The secondary key of the item.
+ * @param {string} sk - The sort key of the item.
  */
 export const insertOrUpdate = async (tableName: string, pk: string, item: Record<string, unknown>, sk?: string) => {
     const itemKeys = Object.keys(item).filter((k) => k !== pk && k !== sk);
