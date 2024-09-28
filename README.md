@@ -16,6 +16,12 @@ import { insertOrUpdate, deleteOne, findOne, findMany, findManyByField, findMany
 // Set the AWS region
 setRegion('us-east-1');
 
+// Set the AWS Secret
+setAccessKey({accessKeyId: 'xxxxxx', secretAccessKey: 'xxxxxx'});
+
+// Set config (secret and region (opt) together)
+setConfig({accessKeyId: 'xxxxxx', secretAccessKey: 'xxxxxx'}, 'us-east-1');
+
 // Insert or update an item
 await insertOrUpdate('tableName', 'pk', item, 'sk');
 
