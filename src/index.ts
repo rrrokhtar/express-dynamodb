@@ -2,7 +2,7 @@
 import { AttributeValue, DeleteItemCommand, ScanCommand, UpdateItemCommand, UpdateItemCommandInput } from "@aws-sdk/client-dynamodb";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 import { ddbDocClient } from "./dynamodb-doc";
-import { QueryCommand, ScanCommandInput } from "@aws-sdk/lib-dynamodb";
+import { QueryCommand, ScanCommandInput, GetCommandInput, GetCommand } from "@aws-sdk/lib-dynamodb";
 import { setRegion } from "./dynamodb-client";
 export { setRegion };
 
@@ -50,34 +50,39 @@ export const insertOrUpdate = async (tableName: string, pk: string, item: Record
  * @param {string} tableName - The name of the table.
  * @param {string} pk - The partion key of the item to be deleted.
  * @param {string} pkValue - The partion key's value of the item.
+ * @param {string} sk - The sort key of the item to be deleted.
+ * @param {string} skValue - The sort key's value of the item.
  */
-export const deleteOne = async (tableName: string, pk: string, pkValue: string) => {
-    const params = {
-        TableName: tableName,
-        Key: { [pk]: { S: pkValue } }
-    };
-    return await ddbDocClient.send(new DeleteItemCommand(params));
+export const deleteOne = async (tableName: string, pk: string, pkValue: string, sk?: string, skValue?: string) => {
+  const params = {
+    TableName: tableName,
+    Key: { [pk]: { S: pkValue } }
+  };
+  if (sk && skValue && params.Key) {
+    params.Key[sk] = { S: skValue };
+  }
+  return await ddbDocClient.send(new DeleteItemCommand(params));
 }
 
 /**
- * @description Find one item by partion key. Returns null if not found
+ * @description [GetItemCommand] Find one item by primary key. Returns null if not found
  * @param {string} tableName - The name of the table.
- * @param {string} pk - The partion key of the item to be found.
- * @param {string} pkValue - The partion key's value of the item.
+ * @param {string} pk - The primary key of the item to be found.
+ * @param {string} pkValue - The primary key's value of the item.
  */
-export const findOne = async (tableName: string, pk: string, pkValue: string) => {
-    const params = {
+export const findOne = async (tableName: string, pk: string, pkValue: string, sk?: string, skValue?: string) => {
+    const params: GetCommandInput = {
         TableName: tableName,
-        KeyConditionExpression: `${pk} = :u`,
-        ExpressionAttributeValues: {
-            ":u": pkValue,
-        },
+        Key: { [pk]: pkValue }
     };
-    const data = await ddbDocClient.send(new QueryCommand(params));
-    if (!data.Items || data.Items?.length < 1) {
+    if (sk && skValue && params.Key) {
+        params.Key[sk] = skValue;
+    }
+    const data = await ddbDocClient.send(new GetCommand(params));
+    if (!data.Item) {
         return null;
     } else {
-        return data.Items?.[0];
+        return data.Item;
     }
 }
 
