@@ -25,11 +25,17 @@ setConfig({accessKeyId: 'xxxxxx', secretAccessKey: 'xxxxxx'}, 'us-east-1');
 // Insert or update an item
 await insertOrUpdate('tableName', 'pk', item, 'sk');
 
-// Delete an item
+// Delete an item by partion key
 await deleteOne('tableName', 'pk', 'pkValue');
+
+// Delete an item by partion key and sort key
+await deleteOne('tableName', 'pk', 'pkValue', 'sk', 'skValue');
 
 // Find one item by partition key
 const result = await findOne('tableName', 'pk', 'pkValue');
+
+// Find one item by partition key and sort key
+const result = await findOne('tableName', 'pk', 'pkValue', 'sk', 'skValue');
 
 // Find many items by partition key
 const results = await findMany('tableName', 'pk', 'pkValue');
@@ -74,21 +80,25 @@ Inserts or updates an item in the table.
 - `item`: The item to insert or update.
 - `sk` (optional): The sort key of the item.
 
-### deleteOne(tableName: string, pk: string, pkValue: string): Promise\<void\>
+### deleteOne(tableName: string, pk: string, pkValue: string,  sk: string, skValue: string): Promise\<void\>
 
 Deletes one item by partition key.
 
 - `tableName`: The name of the table.
 - `pk`: The partition key of the item to be deleted.
 - `pkValue`: The value of the partition key.
+- `sk` (optional): The sort key of the item.
+- `skValue` (optional): The value of the sort key.
 
-### findOne(tableName: string, pk: string, pkValue: string): Promise\<any | null\>
+### findOne(tableName: string, pk: string, pkValue: string, sk: string, skValue: string): Promise\<any | null\>
 
 Finds one item by partition key.
 
 - `tableName`: The name of the table.
 - `pk`: The partition key of the item to be found.
 - `pkValue`: The value of the partition key.
+- `sk` (optional): The sort key of the item.
+- `skValue` (optional): The value of the sort key.
 
 Returns `null` if the item is not found.
 
