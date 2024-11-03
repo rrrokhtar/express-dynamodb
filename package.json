@@ -4,7 +4,10 @@
   "description": "",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
-  "repository": "https://github.com/rrrokhtar/express-dynamodb/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rrrokhtar/express-dynamodb.git"
+  },
   "keywords": [
     "dynamodb",
     "aws",
